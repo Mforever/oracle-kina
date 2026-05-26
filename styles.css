@@ -532,9 +532,76 @@ body.no-scroll { overflow: hidden; }
   section { padding: 60px 0; }
   .hero h1 { font-size: 42px; }
   .hero-artifact { width: 150px; height: 150px; }
-  .modal-card { padding: 32px 24px; }
   .trust { gap: 28px; }
   .divider-frieze { height: 150px; }
   .cta-artifact { height: 250px; }
   .how-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .modal-card {
+    max-width: 92vw;
+    max-height: 80vh;
+    padding: 24px 16px;
+    border-radius: 20px;
+  }
+
+  .modal-glyph img {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .modal-name {
+    font-size: 22px;
+  }
+
+  .modal-sub {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .modal-text {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .modal-offer {
+    padding: 20px 14px;
+  }
+
+  .modal-offer-title {
+    font-size: 16px;
+  }
+
+  .modal-price-new {
+    font-size: 32px;
+  }
+
+  .modal-form {
+    flex-direction: column;
+  }
+
+  .modal-form input {
+    font-size: 14px;
+    padding: 12px 14px;
+    min-width: 100%;
+  }
+
+  .modal-form button {
+    width: 100%;
+  }
+
+  .hero-form {
+    flex-direction: column;
+  }
+
+  .hero-form input {
+    min-width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+  }
 }
