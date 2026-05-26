@@ -34,7 +34,7 @@ async function paymentRoute(req, res, body) {
       capture: true,
       confirmation: {
         type: 'redirect',
-        return_url: config.SITE_URL + '/oracle.html?payment=success'
+        return_url: config.SITE_URL + '/pages/oracle.html?payment=success'
       },
       description: 'Полный Оракул Кина на 2026 год',
       metadata: {

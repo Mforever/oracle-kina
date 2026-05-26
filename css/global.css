@@ -1,0 +1,34 @@
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite; animation-delay: var(--delay); opacity: 0; }
+@keyframes twinkle { 0%, 100% { opacity: 0.1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(2); } }
+
+.fog-layer {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(201, 160, 80, 0.04) 0%, transparent 70%),
+              radial-gradient(ellipse at 20% 80%, rgba(201, 160, 80, 0.03) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+main { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 0 28px; }
+section { padding: 100px 0; }
+h2 { font-family: var(--font-display); font-size: 34px; font-weight: 700; text-align: center; margin-bottom: 40px; letter-spacing: 2px; color: var(--gold); }
+
+.artifact-img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease, filter 0.8s ease; }
+.artifact-img:hover { transform: scale(1.04); filter: brightness(1.15) saturate(1.1); }
+.artifact-img--round { border-radius: 50%; }
+.artifact-img--small { border-radius: 18px; width: 72px; height: 72px; }
+.artifact-img--inline { border-radius: 16px; width: 64px; height: 64px; }
+
+.parallax-bg { background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; position: relative; }
+@supports (-webkit-overflow-scrolling: touch) { .parallax-bg { background-attachment: scroll; } }
+.parallax-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(6, 6, 12, 0.3); pointer-events: none; }

@@ -7,27 +7,22 @@ const { signRoute } = require("./routes/sign");
 const { paymentRoute } = require("./routes/payment");
 const { subscribeRoute } = require("./routes/subscribe");
 
-// Парсинг cookie
 function parseCookies(req) {
   const cookieHeader = req.headers.cookie || "";
   const cookies = {};
   cookieHeader.split(";").forEach((cookie) => {
     const parts = cookie.trim().split("=");
-    if (parts.length === 2) {
-      cookies[parts[0].trim()] = parts[1].trim();
-    }
+    if (parts.length === 2) cookies[parts[0].trim()] = parts[1].trim();
   });
   return cookies;
 }
 
-// Проверка админ-сессии
 function checkAdmin(req) {
   const token = parseCookies(req).admin_token;
   return token && sessions.validateSession(token);
 }
 
 const server = http.createServer(async (req, res) => {
-  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -41,27 +36,27 @@ const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://localhost:${config.PORT}`);
   const pathname = parsedUrl.pathname;
 
-  // ===== API: Знак по дате =====
+  // ===== API =====
+
   if (pathname === "/api/sign" && req.method === "GET") {
     const date = parsedUrl.searchParams.get("date");
-    return signRoute(req, res, date);
+    signRoute(req, res, date);
+    return;
   }
 
-  // ===== API: Оплата (заглушка) =====
   if (pathname === "/api/payment" && req.method === "POST") {
     let body = "";
-    req.on("data", (chunk) => (body += chunk));
+    req.on("data", (c) => (body += c));
     req.on("end", () => paymentRoute(req, res, body));
     return;
   }
 
-  // ===== API: Подписка =====
   if (
     (pathname === "/api/subscribe" || pathname === "/api/subscribe-and-send") &&
     req.method === "POST"
   ) {
     let body = "";
-    req.on("data", (chunk) => (body += chunk));
+    req.on("data", (c) => (body += c));
     req.on("end", () => subscribeRoute(req, res, body));
     return;
   }
@@ -70,24 +65,20 @@ const server = http.createServer(async (req, res) => {
   if (pathname === "/api/admin/login" && req.method === "POST") {
     const ip =
       req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
-
     const attempt = sessions.checkLoginAttempt(ip);
     if (!attempt.allowed) {
       res.writeHead(429, { "Content-Type": "application/json; charset=utf-8" });
       res.end(JSON.stringify({ success: false, error: attempt.reason }));
       return;
     }
-
     let body = "";
-    req.on("data", (chunk) => (body += chunk));
+    req.on("data", (c) => (body += c));
     req.on("end", () => {
       try {
         const { password } = JSON.parse(body);
-
         if (password === config.ADMIN_PASSWORD) {
           sessions.resetAttempts(ip);
           const token = sessions.createSession();
-
           res.setHeader(
             "Set-Cookie",
             `admin_token=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${config.SESSION_TTL / 1000}`,
@@ -149,84 +140,72 @@ const server = http.createServer(async (req, res) => {
           "utf-8",
         ),
       );
+      const list = data.map((item) => ({
+        id: item.id,
+        name_ru: item.name_ru,
+        glyph_emoji: item.glyph_emoji,
+        short_text: item.short_text,
+        full_text: item.full_text,
+      }));
       res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-      res.end(
-        JSON.stringify(
-          data.map((item) => ({
-            id: item.id,
-            name_ru: item.name_ru,
-            glyph_emoji: item.glyph_emoji,
-            short_text: item.short_text,
-            full_text: item.full_text,
-          })),
-        ),
-      );
+      res.end(JSON.stringify(list));
     } catch (e) {
-      res.writeHead(500);
+      res.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
       res.end("[]");
     }
     return;
   }
 
-  // ===== АДМИНКА: ЗНАК (один) =====
-  if (
-    pathname.startsWith("/api/admin/sign/") &&
-    req.method === "GET" &&
-    checkAdmin(req)
-  ) {
+  // ===== АДМИНКА: ЗНАК (один + обновление) =====
+  if (pathname.startsWith("/api/admin/sign/") && checkAdmin(req)) {
     const id = parseInt(pathname.split("/").pop());
-    try {
-      const data = JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "scripts", "maya_260_v2.json"),
-          "utf-8",
-        ),
-      );
-      const item = data.find((s) => s.id === id);
-      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-      res.end(JSON.stringify(item || {}));
-    } catch (e) {
-      res.writeHead(500);
-      res.end("{}");
-    }
-    return;
-  }
+    const filePath = path.join(__dirname, "..", "scripts", "maya_260_v2.json");
 
-  // ===== АДМИНКА: ЗНАК (обновить) =====
-  if (
-    pathname.startsWith("/api/admin/sign/") &&
-    req.method === "PUT" &&
-    checkAdmin(req)
-  ) {
-    const id = parseInt(pathname.split("/").pop());
-    let body = "";
-    req.on("data", (chunk) => (body += chunk));
-    req.on("end", () => {
+    if (req.method === "GET") {
       try {
-        const update = JSON.parse(body);
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "scripts",
-          "maya_260_v2.json",
-        );
         const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-        const item = data.find((s) => s.id === id);
-        if (item) {
-          if (update.short_text !== undefined)
-            item.short_text = update.short_text;
-          if (update.full_text !== undefined) item.full_text = update.full_text;
-          fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
-        }
+        const item = data.find((s) => s.id === id) || {};
         res.writeHead(200, {
           "Content-Type": "application/json; charset=utf-8",
         });
-        res.end(JSON.stringify({ success: true }));
+        res.end(JSON.stringify(item));
       } catch (e) {
-        res.writeHead(500);
-        res.end(JSON.stringify({ success: false, error: e.message }));
+        res.writeHead(500, {
+          "Content-Type": "application/json; charset=utf-8",
+        });
+        res.end("{}");
       }
-    });
+      return;
+    }
+
+    if (req.method === "PUT") {
+      let body = "";
+      req.on("data", (c) => (body += c));
+      req.on("end", () => {
+        try {
+          const update = JSON.parse(body);
+          const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+          const item = data.find((s) => s.id === id);
+          if (item) {
+            if (update.short_text !== undefined)
+              item.short_text = update.short_text;
+            if (update.full_text !== undefined)
+              item.full_text = update.full_text;
+            fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+          }
+          res.writeHead(200, {
+            "Content-Type": "application/json; charset=utf-8",
+          });
+          res.end(JSON.stringify({ success: true }));
+        } catch (e) {
+          res.writeHead(500, {
+            "Content-Type": "application/json; charset=utf-8",
+          });
+          res.end(JSON.stringify({ success: false, error: e.message }));
+        }
+      });
+      return;
+    }
     return;
   }
 
@@ -243,83 +222,76 @@ const server = http.createServer(async (req, res) => {
           "utf-8",
         ),
       );
+      const list = data.map((item) => ({
+        id: item.id,
+        title: item.title,
+        short_text: item.short_text,
+        full_text: item.full_text,
+      }));
       res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-      res.end(
-        JSON.stringify(
-          data.map((item) => ({
-            id: item.id,
-            title: item.title,
-            short_text: item.short_text,
-            full_text: item.full_text,
-          })),
-        ),
-      );
+      res.end(JSON.stringify(list));
     } catch (e) {
-      res.writeHead(500);
+      res.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
       res.end("[]");
     }
     return;
   }
 
-  // ===== АДМИНКА: КОМБИНАЦИЯ (одна) =====
-  if (
-    pathname.startsWith("/api/admin/combo/") &&
-    req.method === "GET" &&
-    checkAdmin(req)
-  ) {
+  // ===== АДМИНКА: КОМБИНАЦИЯ (одна + обновление) =====
+  if (pathname.startsWith("/api/admin/combo/") && checkAdmin(req)) {
     const id = parseInt(pathname.split("/").pop());
-    try {
-      const data = JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "scripts", "zodiac_combos_260_v2.json"),
-          "utf-8",
-        ),
-      );
-      const item = data.find((s) => s.id === id);
-      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-      res.end(JSON.stringify(item || {}));
-    } catch (e) {
-      res.writeHead(500);
-      res.end("{}");
-    }
-    return;
-  }
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "scripts",
+      "zodiac_combos_260_v2.json",
+    );
 
-  // ===== АДМИНКА: КОМБИНАЦИЯ (обновить) =====
-  if (
-    pathname.startsWith("/api/admin/combo/") &&
-    req.method === "PUT" &&
-    checkAdmin(req)
-  ) {
-    const id = parseInt(pathname.split("/").pop());
-    let body = "";
-    req.on("data", (chunk) => (body += chunk));
-    req.on("end", () => {
+    if (req.method === "GET") {
       try {
-        const update = JSON.parse(body);
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "scripts",
-          "zodiac_combos_260_v2.json",
-        );
         const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-        const item = data.find((s) => s.id === id);
-        if (item) {
-          if (update.short_text !== undefined)
-            item.short_text = update.short_text;
-          if (update.full_text !== undefined) item.full_text = update.full_text;
-          fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
-        }
+        const item = data.find((s) => s.id === id) || {};
         res.writeHead(200, {
           "Content-Type": "application/json; charset=utf-8",
         });
-        res.end(JSON.stringify({ success: true }));
+        res.end(JSON.stringify(item));
       } catch (e) {
-        res.writeHead(500);
-        res.end(JSON.stringify({ success: false, error: e.message }));
+        res.writeHead(500, {
+          "Content-Type": "application/json; charset=utf-8",
+        });
+        res.end("{}");
       }
-    });
+      return;
+    }
+
+    if (req.method === "PUT") {
+      let body = "";
+      req.on("data", (c) => (body += c));
+      req.on("end", () => {
+        try {
+          const update = JSON.parse(body);
+          const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+          const item = data.find((s) => s.id === id);
+          if (item) {
+            if (update.short_text !== undefined)
+              item.short_text = update.short_text;
+            if (update.full_text !== undefined)
+              item.full_text = update.full_text;
+            fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+          }
+          res.writeHead(200, {
+            "Content-Type": "application/json; charset=utf-8",
+          });
+          res.end(JSON.stringify({ success: true }));
+        } catch (e) {
+          res.writeHead(500, {
+            "Content-Type": "application/json; charset=utf-8",
+          });
+          res.end(JSON.stringify({ success: false, error: e.message }));
+        }
+      });
+      return;
+    }
     return;
   }
 
@@ -331,13 +303,11 @@ const server = http.createServer(async (req, res) => {
   ) {
     try {
       const p = path.join(__dirname, "..", "subscribers.json");
-      const data = fs.existsSync(p)
-        ? JSON.parse(fs.readFileSync(p, "utf-8"))
-        : [];
+      const data = fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : "[]";
       res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-      res.end(JSON.stringify(data));
+      res.end(data);
     } catch (e) {
-      res.writeHead(500);
+      res.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
       res.end("[]");
     }
     return;
@@ -351,19 +321,17 @@ const server = http.createServer(async (req, res) => {
   ) {
     try {
       const p = path.join(__dirname, "..", "orders.json");
-      const data = fs.existsSync(p)
-        ? JSON.parse(fs.readFileSync(p, "utf-8"))
-        : [];
+      const data = fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : "[]";
       res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-      res.end(JSON.stringify(data));
+      res.end(data);
     } catch (e) {
-      res.writeHead(500);
+      res.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
       res.end("[]");
     }
     return;
   }
 
-  // ===== Статические файлы =====
+  // ===== СТАТИКА =====
   let filePath = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
 
   const extMap = {
@@ -399,10 +367,5 @@ const server = http.createServer(async (req, res) => {
 server.listen(config.PORT, () => {
   console.log("═".repeat(50));
   console.log(`🌎 Сервер: http://localhost:${config.PORT}`);
-  console.log(
-    `📡 API: http://localhost:${config.PORT}/api/sign?date=1990-05-15`,
-  );
-  console.log(`💰 Оплата: POST http://localhost:${config.PORT}/api/payment`);
-  console.log(`🔐 Админка: http://localhost:${config.PORT}/admin.html`);
   console.log("═".repeat(50));
 });

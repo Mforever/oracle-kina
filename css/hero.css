@@ -1,0 +1,19 @@
+.hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 0; position: relative; }
+.hero-glow { position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(201, 160, 80, 0.06) 0%, transparent 70%); pointer-events: none; }
+.hero-artifact { width: 200px; height: 200px; border-radius: 50%; margin-bottom: 40px; position: relative; z-index: 1; }
+.artifact-ring { position: absolute; top: -10px; left: -10px; width: calc(100% + 20px); height: calc(100% + 20px); border-radius: 50%; border: 1px solid rgba(201, 160, 80, 0.3); pointer-events: none; animation: ringPulse 3s ease-in-out infinite; }
+@keyframes ringPulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.06); opacity: 0.8; } }
+.hero-overline { font-family: var(--font-display); font-size: 14px; color: var(--gold); letter-spacing: 6px; text-transform: uppercase; margin-bottom: 16px; }
+.hero h1 { font-family: var(--font-display); font-size: clamp(52px, 10vw, 88px); font-weight: 900; line-height: 1; letter-spacing: 4px; margin-bottom: 20px; }
+.gold { background: linear-gradient(180deg, var(--gold2) 0%, var(--gold) 50%, var(--gold-dark) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 17px; color: var(--text2); max-width: 480px; margin-bottom: 40px; line-height: 1.7; }
+.hero-footnote { font-size: 12px; color: #555; margin-top: 20px; letter-spacing: 1px; }
+
+.hero-form { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 440px; }
+.hero-form input { flex: 1; min-width: 180px; padding: 16px 20px; background: rgba(17, 17, 24, 0.8); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 17px; outline: none; transition: border-color 0.3s; }
+.hero-form input:focus { border-color: var(--gold); }
+.hero-form input::placeholder { color: #555; }
+.btn-primary { padding: 16px 32px; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: #0a0a0f; font-weight: 700; font-size: 16px; font-family: var(--font-display); letter-spacing: 1px; border: none; border-radius: 14px; cursor: pointer; transition: all 0.3s; white-space: nowrap; }
+.btn-primary:hover { background: linear-gradient(135deg, var(--gold), var(--gold2)); box-shadow: 0 8px 30px rgba(201, 160, 80, 0.3); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }

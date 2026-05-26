@@ -193,23 +193,137 @@ body {
   margin-top: 12px;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 600px) {
+/* ===== АДАПТИВ ДЛЯ СТРАНИЦЫ ОРАКУЛА ===== */
+@media (max-width: 768px) {
   .oracle-page {
     padding: 40px 16px;
   }
 
   .oracle-content {
-    padding: 28px 18px;
+    padding: 28px 20px;
+  }
+
+  .oracle-header {
+    margin-bottom: 32px;
+  }
+
+  .oracle-glyph {
+    font-size: 72px;
+  }
+
+  .oracle-name {
+    font-size: 28px;
+  }
+
+  .oracle-subtitle {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  .oracle-section {
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+  }
+
+  .oracle-section-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 12px;
+  }
+
+  .oracle-section-body h3 {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .oracle-section-body p {
+    font-size: 14px;
+  }
+
+  .oracle-section-body .oracle-advice {
+    font-size: 16px;
+    padding-left: 16px;
+  }
+
+  .oracle-final {
+    padding: 24px 18px;
+  }
+
+  .oracle-final p {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+}
+
+@media (max-width: 480px) {
+  .oracle-page {
+    padding: 28px 12px;
+  }
+
+  .oracle-content {
+    padding: 20px 14px;
+    border-radius: 18px;
+  }
+
+  .oracle-glyph {
+    font-size: 56px;
+    margin-bottom: 12px;
+  }
+
+  .oracle-name {
+    font-size: 24px;
+    letter-spacing: 1px;
+  }
+
+  .oracle-subtitle {
+    font-size: 14px;
+    letter-spacing: 1px;
   }
 
   .oracle-section {
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .oracle-section-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .oracle-section-body h3 {
+    font-size: 15px;
+  }
+
+  .oracle-section-body p {
+    font-size: 13px;
+    line-height: 1.6;
   }
 
   .oracle-section-body .oracle-advice {
-    text-align: left;
+    font-size: 14px;
+    padding-left: 12px;
+    margin: 12px 0;
+  }
+
+  .oracle-final {
+    padding: 20px 14px;
+    margin-top: 24px;
+  }
+
+  .oracle-final p {
+    font-size: 13px;
+  }
+
+  .oracle-footer {
+    margin-top: 32px;
+    padding-top: 20px;
+  }
+
+  .oracle-year {
+    font-size: 18px;
   }
 }
