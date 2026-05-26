@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /server/
+Disallow: /scripts/
+Disallow: /images/
+
+Sitemap: https://oracle-kina.ru/sitemap.xml
+
+Host: oracle-kina.ru

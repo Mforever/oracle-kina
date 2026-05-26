@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админка — Оракул Кина</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+  <div class="admin-container" id="app">
+    <!-- Экран входа -->
+    <div class="login-screen" id="loginScreen">
+      <h1>Оракул Кина</h1>
+      <p>Административная панель</p>
+      <input type="password" id="adminKey" placeholder="Ключ доступа">
+      <button id="loginBtn">Войти</button>
+      <p class="login-error" id="loginError"></p>
+    </div>
+
+    <!-- Панель управления -->
+    <div class="admin-panel" id="adminPanel" style="display:none;">
+      <header class="admin-header">
+        <h2>Панель управления</h2>
+        <nav class="admin-nav">
+          <button class="nav-btn active" data-tab="signs">Знаки Майя</button>
+          <button class="nav-btn" data-tab="combos">Комбинации</button>
+          <button class="nav-btn" data-tab="subscribers">Подписчики</button>
+          <button class="nav-btn" data-tab="orders">Заказы</button>
+          <button class="nav-btn" data-tab="settings">Настройки</button>
+        </nav>
+        <button id="logoutBtn" class="logout-btn">Выйти</button>
+      </header>
+
+      <main class="admin-content">
+        <!-- Вкладка: Знаки -->
+        <div class="tab active" id="tab-signs">
+          <div class="tab-header">
+            <h3>Знаки Майя (260)</h3>
+            <input type="text" id="signSearch" placeholder="Поиск по названию...">
+          </div>
+          <div class="signs-list" id="signsList"></div>
+        </div>
+
+        <!-- Вкладка: Комбинации -->
+        <div class="tab" id="tab-combos">
+          <div class="tab-header">
+            <h3>Зодиакальные комбинации (260)</h3>
+            <input type="text" id="comboSearch" placeholder="Поиск...">
+          </div>
+          <div class="combos-list" id="combosList"></div>
+        </div>
+
+        <!-- Вкладка: Подписчики -->
+        <div class="tab" id="tab-subscribers">
+          <div class="tab-header">
+            <h3>Подписчики</h3>
+            <button id="exportSubsBtn" class="btn-small">Экспорт CSV</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Дата</th>
+              </tr>
+            </thead>
+            <tbody id="subsTable"></tbody>
+          </table>
+        </div>
+
+        <!-- Вкладка: Заказы -->
+        <div class="tab" id="tab-orders">
+          <div class="tab-header">
+            <h3>Заказы</h3>
+            <button id="exportOrdersBtn" class="btn-small">Экспорт CSV</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Дата рождения</th>
+                <th>Знак</th>
+                <th>Дата заказа</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTable"></tbody>
+          </table>
+        </div>
+
+        <!-- Вкладка: Настройки -->
+        <div class="tab" id="tab-settings">
+          <h3>Настройки сайта</h3>
+          <form id="settingsForm">
+            <label>Имя ИП / самозанятого</label>
+            <input type="text" id="settingName" placeholder="Иванов Иван Иванович">
+
+            <label>ИНН</label>
+            <input type="text" id="settingInn" placeholder="123456789012">
+
+            <label>Контактный email</label>
+            <input type="email" id="settingEmail" placeholder="hello@oracle-kina.ru">
+
+            <label>Telegram</label>
+            <input type="text" id="settingTelegram" placeholder="@oraclekina">
+
+            <label>Цена (руб)</label>
+            <input type="number" id="settingPrice" placeholder="299">
+
+            <label>Админ-ключ</label>
+            <input type="text" id="settingAdminKey" placeholder="секретный_ключ">
+
+            <button type="submit" class="btn-primary">Сохранить</button>
+          </form>
+        </div>
+      </main>
+    </div>
+
+    <!-- Модалка редактирования -->
+    <div class="edit-modal" id="editModal">
+      <div class="edit-modal-content">
+        <button class="edit-modal-close" id="editModalClose">&times;</button>
+        <h3 id="editModalTitle"></h3>
+        <label>Краткий текст</label>
+        <textarea id="editShortText" rows="4"></textarea>
+        <label>Полный текст</label>
+        <textarea id="editFullText" rows="10"></textarea>
+        <button id="saveEditBtn" class="btn-primary">Сохранить</button>
+        <p class="edit-message" id="editMessage"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+
+</html>

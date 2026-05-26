@@ -1,0 +1,385 @@
+:root {
+  --bg: #0d0d16;
+  --card: #161625;
+  --border: #252540;
+  --text: #e0dcd0;
+  --text2: #8a8780;
+  --gold: #c9a050;
+  --gold2: #e0c878;
+  --red: #f87171;
+  --green: #4ade80;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+.admin-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Login */
+.login-screen {
+  max-width: 400px;
+  margin: 100px auto 0;
+  text-align: center;
+  background: var(--card);
+  padding: 48px 36px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.login-screen h1 {
+  font-size: 28px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.login-screen p {
+  color: var(--text2);
+  margin-bottom: 28px;
+}
+
+.login-screen input {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 16px;
+  margin-bottom: 16px;
+  outline: none;
+}
+
+.login-screen input:focus {
+  border-color: var(--gold);
+}
+
+.login-screen button {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: #0d0d16;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.login-error {
+  color: var(--red);
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+/* Header */
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.admin-header h2 {
+  font-size: 22px;
+  color: var(--gold);
+}
+
+.admin-nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  padding: 10px 18px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+
+.nav-btn.active {
+  background: var(--gold);
+  color: #0d0d16;
+  border-color: var(--gold);
+}
+
+.nav-btn:hover:not(.active) {
+  border-color: var(--gold);
+  color: var(--text);
+}
+
+.logout-btn {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* Tabs */
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tab-header h3 {
+  font-size: 18px;
+}
+
+.tab-header input {
+  padding: 10px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+
+.tab-header input:focus {
+  border-color: var(--gold);
+}
+
+/* Lists */
+.signs-list, .combos-list {
+  display: grid;
+  gap: 12px;
+}
+
+.sign-item, .combo-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  transition: border-color 0.3s;
+}
+
+.sign-item:hover, .combo-item:hover {
+  border-color: var(--gold);
+}
+
+.sign-item .info, .combo-item .info {
+  flex: 1;
+}
+
+.sign-item .name, .combo-item .title {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.sign-item .preview, .combo-item .preview {
+  font-size: 13px;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+}
+
+.edit-btn {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.edit-btn:hover {
+  background: var(--gold);
+  color: #0d0d16;
+}
+
+/* Tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th, .data-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.data-table th {
+  color: var(--text2);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Buttons */
+.btn-small {
+  padding: 8px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-primary {
+  padding: 12px 28px;
+  background: var(--gold);
+  color: #0d0d16;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Settings form */
+#settingsForm {
+  max-width: 500px;
+  display: grid;
+  gap: 16px;
+}
+
+#settingsForm label {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+#settingsForm input {
+  padding: 12px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+
+#settingsForm input:focus {
+  border-color: var(--gold);
+}
+
+/* Edit modal */
+.edit-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(6,6,12,0.9);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.edit-modal.active {
+  display: flex;
+}
+
+.edit-modal-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.edit-modal-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.edit-modal-content h3 {
+  margin-bottom: 20px;
+}
+
+.edit-modal-content label {
+  display: block;
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 6px;
+  margin-top: 16px;
+}
+
+.edit-modal-content textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+}
+
+.edit-modal-content textarea:focus {
+  border-color: var(--gold);
+}
+
+.edit-message {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.edit-message.success {
+  color: var(--green);
+}
+
+.edit-message.error {
+  color: var(--red);
+}
+
+@media (max-width: 600px) {
+  .admin-header { flex-direction: column; align-items: flex-start; }
+  .sign-item, .combo-item { flex-direction: column; align-items: flex-start; }
+  .sign-item .preview, .combo-item .preview { max-width: 100%; }
+}

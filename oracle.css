@@ -1,0 +1,215 @@
+:root {
+  --bg: #06060c;
+  --gold: #c9a050;
+  --gold2: #e0c878;
+  --gold-dark: #8b6914;
+  --text: #e8e6e3;
+  --text2: #9a9790;
+  --card: #111118;
+  --border: #222230;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, sans-serif;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+/* ===== STARS ===== */
+.stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite; animation-delay: var(--delay); opacity: 0; }
+@keyframes twinkle { 0%, 100% { opacity: 0.1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(2); } }
+
+/* ===== FOG ===== */
+.fog-layer {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(201, 160, 80, 0.04) 0%, transparent 70%),
+              radial-gradient(ellipse at 20% 80%, rgba(201, 160, 80, 0.03) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ===== ORACLE PAGE ===== */
+.oracle-page {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 28px;
+}
+
+/* ===== HEADER ===== */
+.oracle-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.oracle-glyph {
+  font-size: 96px;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.oracle-name {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.oracle-subtitle {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  color: var(--text2);
+  letter-spacing: 4px;
+}
+
+/* ===== CONTENT ===== */
+.oracle-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 48px 40px;
+  animation: fadeIn 1.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SECTIONS ===== */
+.oracle-section {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.oracle-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.oracle-section-icon {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 14px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.oracle-section-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.oracle-section-body h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.oracle-section-body p {
+  font-size: 15px;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.oracle-section-body p strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.oracle-section-body .oracle-advice {
+  font-style: italic;
+  font-size: 18px;
+  color: var(--text);
+  margin: 16px 0;
+  padding-left: 20px;
+  border-left: 2px solid var(--gold);
+}
+
+/* ===== FINAL BLESSING ===== */
+.oracle-final {
+  margin-top: 32px;
+  padding: 32px 28px;
+  background: linear-gradient(135deg, rgba(201, 160, 80, 0.1), rgba(201, 160, 80, 0.03));
+  border: 1px solid rgba(201, 160, 80, 0.25);
+  border-radius: 20px;
+  text-align: center;
+}
+
+.oracle-final p {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.oracle-final p:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== FOOTER ===== */
+.oracle-footer {
+  text-align: center;
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  color: #555;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.oracle-footer p {
+  margin-bottom: 4px;
+}
+
+.oracle-year {
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  color: var(--gold);
+  margin-top: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .oracle-page {
+    padding: 40px 16px;
+  }
+
+  .oracle-content {
+    padding: 28px 18px;
+  }
+
+  .oracle-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .oracle-section-body .oracle-advice {
+    text-align: left;
+  }
+}

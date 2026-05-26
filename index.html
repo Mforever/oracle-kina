@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Оракул Кина — Твой знак в календаре Майя на 2026 год</title>
+  <meta name="description"
+    content="Узнай свой знак в священном календаре Цолькин. 260 уникальных знаков Майя. Бесплатно: глиф, тотем, камень-талисман, цвет силы и прогноз на 2026 год.">
+  <meta name="keywords"
+    content="оракул кина, календарь майя, цолькин, знак майя по дате рождения, гороскоп майя 2026, кин, тотем, камень талисман, цвет силы">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Оракул Кина">
+  <link rel="canonical" href="https://oracle-kina.ru/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Оракул Кина — Твой знак в календаре Майя на 2026 год">
+  <meta property="og:description"
+    content="Узнай свой знак в священном календаре Цолькин. 260 уникальных знаков Майя. Бесплатно.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://oracle-kina.ru/">
+  <meta property="og:image" content="https://oracle-kina.ru/images/hero-mask.jpg">
+  <meta property="og:site_name" content="Оракул Кина">
+  <meta property="og:locale" content="ru_RU">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Оракул Кина — Твой знак в календаре Майя на 2026 год">
+  <meta name="twitter:description"
+    content="Узнай свой знак в священном календаре Цолькин. 260 уникальных знаков Майя. Бесплатно.">
+  <meta name="twitter:image" content="https://oracle-kina.ru/images/hero-mask.jpg">
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Оракул Кина",
+    "url": "https://oracle-kina.ru/",
+    "description": "Узнай свой знак в священном календаре Цолькин. 260 уникальных знаков Майя. Бесплатно: глиф, тотем, камень-талисман, цвет силы и прогноз на 2026 год.",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+
+  <!-- Шрифты -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <div class="stars-container" id="stars"></div>
+  <div class="fog-layer"></div>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div class="hero-glow"></div>
+
+      <div class="hero-artifact">
+        <img src="images/hero-mask.jpg" alt="Золотая погребальная маска майя с изумрудными глазами"
+          class="artifact-img artifact-img--round" loading="eager">
+        <div class="artifact-ring"></div>
+      </div>
+
+      <p class="hero-overline">Священный календарь Цолькин</p>
+      <h1>Оракул<br><span class="gold">Кина</span></h1>
+      <p class="hero-sub">Древние майя знали: каждый день несёт свою энергию. Введи дату рождения — и узнай, какой из
+        260 уникальных знаков твой. Бесплатно.</p>
+
+      <form class="hero-form" id="heroForm">
+        <input type="text" id="birthDate" placeholder="ДД.ММ.ГГГГ" value="21.12.2012" autocomplete="off"
+          aria-label="Дата рождения">
+        <button type="submit" class="btn-primary" id="calcBtn">Открыть знак</button>
+      </form>
+
+      <p class="hero-footnote">Бесплатно · Без регистрации · 10 секунд</p>
+    </section>
+
+    <!-- TRUST -->
+    <section class="trust">
+      <div class="trust-item">
+        <div class="trust-icon">
+          <img src="images/calendar.jpg" alt="Круглый каменный календарь майя с высеченными глифами"
+            class="artifact-img artifact-img--small" loading="lazy">
+        </div>
+        <span>260 уникальных знаков</span>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <img src="images/pyramid.jpg" alt="Пирамида Чичен-Ица на фоне закатного неба"
+            class="artifact-img artifact-img--small" loading="lazy">
+        </div>
+        <span>Основано на календаре Майя</span>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <img src="images/obsidian.jpg" alt="Крупный кристалл обсидиана с бликами на тёмном фоне"
+            class="artifact-img artifact-img--small" loading="lazy">
+        </div>
+        <span>Прогноз на 2026 год</span>
+      </div>
+    </section>
+
+    <!-- HOW -->
+    <section class="how">
+      <h2>Как это работает</h2>
+      <div class="how-grid">
+        <div class="how-step">
+          <span class="how-num">1</span>
+          <h3>Введи дату рождения</h3>
+          <p>Твой день рождения определяет Кин — уникальную комбинацию Печати и Тона в календаре Цолькин.</p>
+        </div>
+        <div class="how-step">
+          <span class="how-num">2</span>
+          <h3>Узнай свой знак</h3>
+          <p>Ты увидишь древний глиф, название знака и краткое толкование твоей энергии.</p>
+        </div>
+        <div class="how-step">
+          <span class="how-num">3</span>
+          <h3>Получи Оракул</h3>
+          <p>Полный гороскоп на 2026 год с тотемом, камнем-талисманом, цветом силы и советом древних.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARTIFACT DIVIDER -->
+    <div class="divider">
+      <div class="divider-frieze parallax-bg" style="background-image: url('images/frieze.jpg');"
+        aria-label="Каменный фриз с резными глифами майя" role="img">
+        <div class="parallax-overlay"></div>
+      </div>
+    </div>
+
+    <!-- WHAT -->
+    <section class="what">
+      <h2>Что внутри Оракула</h2>
+      <ul class="what-list">
+        <li>
+          <span class="what-icon">
+            <img src="images/jaguar.jpg" alt="Голова ягуара со светящимися глазами"
+              class="artifact-img artifact-img--inline" loading="lazy">
+          </span>
+          <div>
+            <strong>Тотемное животное</strong>
+            <p>Дух-хранитель, который ведёт тебя по жизни</p>
+          </div>
+        </li>
+        <li>
+          <span class="what-icon">
+            <img src="images/gemstone.jpg" alt="Огранённый драгоценный камень на чёрном бархате"
+              class="artifact-img artifact-img--inline" loading="lazy">
+          </span>
+          <div>
+            <strong>Камень-талисман</strong>
+            <p>Усилит твои природные способности в 2026 году</p>
+          </div>
+        </li>
+        <li>
+          <span class="what-icon">
+            <img src="images/textile.jpg" alt="Тканый орнамент майя с золотыми нитями"
+              class="artifact-img artifact-img--inline" loading="lazy">
+          </span>
+          <div>
+            <strong>Цвет силы</strong>
+            <p>Что носить в важные дни для притяжения удачи</p>
+          </div>
+        </li>
+        <li>
+          <span class="what-icon">
+            <img src="images/moon-pyramid.jpg" alt="Полная луна над пирамидой майя"
+              class="artifact-img artifact-img--inline" loading="lazy">
+          </span>
+          <div>
+            <strong>Месяц удачи</strong>
+            <p>Когда начинать новое и принимать важные решения</p>
+          </div>
+        </li>
+        <li>
+          <span class="what-icon">
+            <img src="images/shield.jpg" alt="Круглый щит майя с геометрическим узором"
+              class="artifact-img artifact-img--inline" loading="lazy">
+          </span>
+          <div>
+            <strong>Опасный месяц</strong>
+            <p>Когда быть осторожным и не рисковать</p>
+          </div>
+        </li>
+        <li>
+          <span class="what-icon">
+            <img src="images/codex.jpg" alt="Развёрнутый древний кодекс майя с рисунками"
+              class="artifact-img artifact-img--inline" loading="lazy">
+          </span>
+          <div>
+            <strong>Совет года</strong>
+            <p>Одна фраза, которая изменит твой 2026</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+      <div class="cta-artifact parallax-bg" style="background-image: url('images/temple.jpg');"
+        aria-label="Силуэт храма майя на фоне закатного неба" role="img">
+        <div class="cta-artifact-overlay"></div>
+      </div>
+
+      <h2>Готов узнать свой знак?</h2>
+      <a href="#top" class="btn-primary">Открыть знак</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+      <div class="footer-top">
+        <div class="footer-brand-row">
+          <p class="footer-brand" id="footerBrand">Оракул Кина</p>
+          <p class="footer-tagline">Древняя мудрость для нового времени</p>
+        </div>
+        <div class="footer-links">
+          <a href="privacy.html">Политика конфиденциальности</a>
+          <span class="footer-sep">·</span>
+          <a href="offer.html">Оферта</a>
+          <span class="footer-sep">·</span>
+          <a href="refund.html">Возврат средств</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-rekv">
+          <p>ИП Руденко Дмитрий Сергеевич &nbsp;·&nbsp; ИНН 550608187157</p>
+        </div>
+        <div class="footer-contacts">
+          <a href="mailto:hello@oracle-kina.ru">hello@oracle-kina.ru</a>
+          <span class="footer-sep">·</span>
+          <a href="https://t.me/oraclekina" target="_blank" rel="noopener">@oraclekina</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 Оракул Кина &middot; Календарь Цолькин</p>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalSignName">
+    <div class="modal-card" id="modalCard">
+      <button class="modal-close" id="modalClose" aria-label="Закрыть">&times;</button>
+
+      <div class="modal-glyph" id="modalGlyph" aria-hidden="true">🔮</div>
+      <h2 class="modal-name" id="modalSignName"></h2>
+      <p class="modal-sub" id="modalSignSubtitle"></p>
+
+      <div class="modal-text" id="modalTypedText"></div>
+
+      <div class="modal-offer" id="modalOfferBlock">
+        <p class="modal-offer-title">Узнай свою судьбу на годпо цене чашки кофе</p>
+        <p class="modal-price-new">299 ₽</p>
+
+        <form class="modal-form" id="modalPayForm">
+          <input type="email" id="modalUserEmail" placeholder="Твой email" autocomplete="off"
+            aria-label="Email для получения гороскопа">
+          <button type="submit" class="btn-primary" id="modalPayBtn">Получить на почту</button>
+        </form>
+        <p class="modal-message" id="modalMessageBox" role="status"></p>
+        <p class="modal-guarantee">Оплата через ЮKassa &middot; Мгновенная доставка &middot; Доступ навсегда</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- АДМИН-ЛОГИН (скрыт) -->
+  <div class="modal-overlay" id="adminLoginOverlay">
+    <div class="modal-card" id="adminLoginCard">
+      <button class="modal-close" id="adminLoginClose">&times;</button>
+      <h2 class="modal-name" style="margin-bottom:24px;">Вход в админку</h2>
+      <form id="adminLoginForm" class="modal-form">
+        <input type="password" id="adminPassword" placeholder="Пароль" autocomplete="off">
+        <button type="submit" class="btn-primary">Войти</button>
+      </form>
+      <p class="modal-message" id="adminLoginMessage"></p>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+
+</html>

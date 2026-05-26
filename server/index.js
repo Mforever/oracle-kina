@@ -1,0 +1,408 @@
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const config = require("./config");
+const sessions = require("./sessions");
+const { signRoute } = require("./routes/sign");
+const { paymentRoute } = require("./routes/payment");
+const { subscribeRoute } = require("./routes/subscribe");
+
+// Парсинг cookie
+function parseCookies(req) {
+  const cookieHeader = req.headers.cookie || "";
+  const cookies = {};
+  cookieHeader.split(";").forEach((cookie) => {
+    const parts = cookie.trim().split("=");
+    if (parts.length === 2) {
+      cookies[parts[0].trim()] = parts[1].trim();
+    }
+  });
+  return cookies;
+}
+
+// Проверка админ-сессии
+function checkAdmin(req) {
+  const token = parseCookies(req).admin_token;
+  return token && sessions.validateSession(token);
+}
+
+const server = http.createServer(async (req, res) => {
+  // CORS
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
+  const parsedUrl = new URL(req.url, `http://localhost:${config.PORT}`);
+  const pathname = parsedUrl.pathname;
+
+  // ===== API: Знак по дате =====
+  if (pathname === "/api/sign" && req.method === "GET") {
+    const date = parsedUrl.searchParams.get("date");
+    return signRoute(req, res, date);
+  }
+
+  // ===== API: Оплата (заглушка) =====
+  if (pathname === "/api/payment" && req.method === "POST") {
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => paymentRoute(req, res, body));
+    return;
+  }
+
+  // ===== API: Подписка =====
+  if (
+    (pathname === "/api/subscribe" || pathname === "/api/subscribe-and-send") &&
+    req.method === "POST"
+  ) {
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => subscribeRoute(req, res, body));
+    return;
+  }
+
+  // ===== АДМИНКА: ЛОГИН =====
+  if (pathname === "/api/admin/login" && req.method === "POST") {
+    const ip =
+      req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
+
+    const attempt = sessions.checkLoginAttempt(ip);
+    if (!attempt.allowed) {
+      res.writeHead(429, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify({ success: false, error: attempt.reason }));
+      return;
+    }
+
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => {
+      try {
+        const { password } = JSON.parse(body);
+
+        if (password === config.ADMIN_PASSWORD) {
+          sessions.resetAttempts(ip);
+          const token = sessions.createSession();
+
+          res.setHeader(
+            "Set-Cookie",
+            `admin_token=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${config.SESSION_TTL / 1000}`,
+          );
+          res.writeHead(200, {
+            "Content-Type": "application/json; charset=utf-8",
+          });
+          res.end(JSON.stringify({ success: true }));
+        } else {
+          sessions.recordFailedAttempt(ip);
+          res.writeHead(401, {
+            "Content-Type": "application/json; charset=utf-8",
+          });
+          res.end(JSON.stringify({ success: false, error: "Неверный пароль" }));
+        }
+      } catch (e) {
+        res.writeHead(400, {
+          "Content-Type": "application/json; charset=utf-8",
+        });
+        res.end(JSON.stringify({ success: false, error: "Неверный формат" }));
+      }
+    });
+    return;
+  }
+
+  // ===== АДМИНКА: ПРОВЕРКА СЕССИИ =====
+  if (pathname === "/api/admin/check-session" && req.method === "GET") {
+    const valid = checkAdmin(req);
+    res.writeHead(valid ? 200 : 401, {
+      "Content-Type": "application/json; charset=utf-8",
+    });
+    res.end(JSON.stringify({ valid }));
+    return;
+  }
+
+  // ===== АДМИНКА: ВЫХОД =====
+  if (pathname === "/api/admin/logout" && req.method === "POST") {
+    const token = parseCookies(req).admin_token;
+    if (token) sessions.destroySession(token);
+    res.setHeader(
+      "Set-Cookie",
+      "admin_token=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0",
+    );
+    res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    res.end(JSON.stringify({ success: true }));
+    return;
+  }
+
+  // ===== АДМИНКА: ЗНАКИ (список) =====
+  if (
+    pathname === "/api/admin/signs" &&
+    req.method === "GET" &&
+    checkAdmin(req)
+  ) {
+    try {
+      const data = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "scripts", "maya_260_v2.json"),
+          "utf-8",
+        ),
+      );
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(
+        JSON.stringify(
+          data.map((item) => ({
+            id: item.id,
+            name_ru: item.name_ru,
+            glyph_emoji: item.glyph_emoji,
+            short_text: item.short_text,
+            full_text: item.full_text,
+          })),
+        ),
+      );
+    } catch (e) {
+      res.writeHead(500);
+      res.end("[]");
+    }
+    return;
+  }
+
+  // ===== АДМИНКА: ЗНАК (один) =====
+  if (
+    pathname.startsWith("/api/admin/sign/") &&
+    req.method === "GET" &&
+    checkAdmin(req)
+  ) {
+    const id = parseInt(pathname.split("/").pop());
+    try {
+      const data = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "scripts", "maya_260_v2.json"),
+          "utf-8",
+        ),
+      );
+      const item = data.find((s) => s.id === id);
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify(item || {}));
+    } catch (e) {
+      res.writeHead(500);
+      res.end("{}");
+    }
+    return;
+  }
+
+  // ===== АДМИНКА: ЗНАК (обновить) =====
+  if (
+    pathname.startsWith("/api/admin/sign/") &&
+    req.method === "PUT" &&
+    checkAdmin(req)
+  ) {
+    const id = parseInt(pathname.split("/").pop());
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => {
+      try {
+        const update = JSON.parse(body);
+        const filePath = path.join(
+          __dirname,
+          "..",
+          "scripts",
+          "maya_260_v2.json",
+        );
+        const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+        const item = data.find((s) => s.id === id);
+        if (item) {
+          if (update.short_text !== undefined)
+            item.short_text = update.short_text;
+          if (update.full_text !== undefined) item.full_text = update.full_text;
+          fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+        }
+        res.writeHead(200, {
+          "Content-Type": "application/json; charset=utf-8",
+        });
+        res.end(JSON.stringify({ success: true }));
+      } catch (e) {
+        res.writeHead(500);
+        res.end(JSON.stringify({ success: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // ===== АДМИНКА: КОМБИНАЦИИ (список) =====
+  if (
+    pathname === "/api/admin/combos" &&
+    req.method === "GET" &&
+    checkAdmin(req)
+  ) {
+    try {
+      const data = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "scripts", "zodiac_combos_260_v2.json"),
+          "utf-8",
+        ),
+      );
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(
+        JSON.stringify(
+          data.map((item) => ({
+            id: item.id,
+            title: item.title,
+            short_text: item.short_text,
+            full_text: item.full_text,
+          })),
+        ),
+      );
+    } catch (e) {
+      res.writeHead(500);
+      res.end("[]");
+    }
+    return;
+  }
+
+  // ===== АДМИНКА: КОМБИНАЦИЯ (одна) =====
+  if (
+    pathname.startsWith("/api/admin/combo/") &&
+    req.method === "GET" &&
+    checkAdmin(req)
+  ) {
+    const id = parseInt(pathname.split("/").pop());
+    try {
+      const data = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "scripts", "zodiac_combos_260_v2.json"),
+          "utf-8",
+        ),
+      );
+      const item = data.find((s) => s.id === id);
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify(item || {}));
+    } catch (e) {
+      res.writeHead(500);
+      res.end("{}");
+    }
+    return;
+  }
+
+  // ===== АДМИНКА: КОМБИНАЦИЯ (обновить) =====
+  if (
+    pathname.startsWith("/api/admin/combo/") &&
+    req.method === "PUT" &&
+    checkAdmin(req)
+  ) {
+    const id = parseInt(pathname.split("/").pop());
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => {
+      try {
+        const update = JSON.parse(body);
+        const filePath = path.join(
+          __dirname,
+          "..",
+          "scripts",
+          "zodiac_combos_260_v2.json",
+        );
+        const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+        const item = data.find((s) => s.id === id);
+        if (item) {
+          if (update.short_text !== undefined)
+            item.short_text = update.short_text;
+          if (update.full_text !== undefined) item.full_text = update.full_text;
+          fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+        }
+        res.writeHead(200, {
+          "Content-Type": "application/json; charset=utf-8",
+        });
+        res.end(JSON.stringify({ success: true }));
+      } catch (e) {
+        res.writeHead(500);
+        res.end(JSON.stringify({ success: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // ===== АДМИНКА: ПОДПИСЧИКИ =====
+  if (
+    pathname === "/api/admin/subscribers" &&
+    req.method === "GET" &&
+    checkAdmin(req)
+  ) {
+    try {
+      const p = path.join(__dirname, "..", "subscribers.json");
+      const data = fs.existsSync(p)
+        ? JSON.parse(fs.readFileSync(p, "utf-8"))
+        : [];
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify(data));
+    } catch (e) {
+      res.writeHead(500);
+      res.end("[]");
+    }
+    return;
+  }
+
+  // ===== АДМИНКА: ЗАКАЗЫ =====
+  if (
+    pathname === "/api/admin/orders" &&
+    req.method === "GET" &&
+    checkAdmin(req)
+  ) {
+    try {
+      const p = path.join(__dirname, "..", "orders.json");
+      const data = fs.existsSync(p)
+        ? JSON.parse(fs.readFileSync(p, "utf-8"))
+        : [];
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify(data));
+    } catch (e) {
+      res.writeHead(500);
+      res.end("[]");
+    }
+    return;
+  }
+
+  // ===== Статические файлы =====
+  let filePath = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
+
+  const extMap = {
+    ".html": "text/html; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+  };
+
+  const ext = path.extname(filePath);
+  const contentType = extMap[ext] || "text/plain; charset=utf-8";
+
+  try {
+    const content = fs.readFileSync(filePath);
+    res.writeHead(200, { "Content-Type": contentType });
+    res.end(content);
+  } catch {
+    try {
+      const content = fs.readFileSync("index.html", "utf-8");
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+      res.end(content);
+    } catch {
+      res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+      res.end("<h1>404 Not Found</h1>");
+    }
+  }
+});
+
+server.listen(config.PORT, () => {
+  console.log("═".repeat(50));
+  console.log(`🌎 Сервер: http://localhost:${config.PORT}`);
+  console.log(
+    `📡 API: http://localhost:${config.PORT}/api/sign?date=1990-05-15`,
+  );
+  console.log(`💰 Оплата: POST http://localhost:${config.PORT}/api/payment`);
+  console.log(`🔐 Админка: http://localhost:${config.PORT}/admin.html`);
+  console.log("═".repeat(50));
+});

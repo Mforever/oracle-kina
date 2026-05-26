@@ -1,0 +1,7 @@
+node_modules/
+.env
+subscribers.json
+orders.json
+images/
+.DS_Store
+*.log

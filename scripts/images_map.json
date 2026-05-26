@@ -1,0 +1,74 @@
+{
+  "hero-mask": {
+    "description": "mayan gold mask artifact",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "calendar": {
+    "description": "mayan calendar stone glyphs",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "pyramid": {
+    "description": "chichen itza pyramid sunset",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "obsidian": {
+    "description": "obsidian crystal dark",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "frieze": {
+    "description": "mayan frieze glyphs horizontal",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "jaguar": {
+    "description": "jaguar face glowing eyes",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "gemstone": {
+    "description": "gemstone dark background",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "textile": {
+    "description": "mayan textile gold pattern",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "moon-pyramid": {
+    "description": "full moon pyramid silhouette",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "shield": {
+    "description": "mayan shield geometric",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "codex": {
+    "description": "mayan codex ancient manuscript",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  },
+  "temple": {
+    "description": "mayan temple sunset wide",
+    "url": null,
+    "localPath": null,
+    "note": "Требуется ручной подбор"
+  }
+}
