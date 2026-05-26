@@ -9,6 +9,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="oracle.css">
 </head>
 
@@ -29,10 +31,17 @@
     <div class="oracle-footer">
       <p>Этот Оракул создан для тебя на основе священного календаря Цолькин.</p>
       <p>Древняя мудрость для нового времени.</p>
+      <div class="oracle-actions">
+        <a href="/" class="btn-primary">← На главную</a>
+        <button class="btn-primary" id="pdfBtn">📄 Скачать PDF</button>
+        <button class="btn-primary" id="shareBtn">🔗 Поделиться</button>
+      </div>
       <p class="oracle-year">2026</p>
     </div>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="oracle.js"></script>
 </body>
 

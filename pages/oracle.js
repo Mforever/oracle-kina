@@ -28,7 +28,6 @@
     rawData = localStorage.getItem("lastOracleData");
   }
 
-  // Нет данных и нет флага оплаты — доступ закрыт
   if (!rawData && !isPaymentSuccess) {
     const content = document.getElementById("oracleContent");
     if (content) {
@@ -213,4 +212,67 @@
   html += "</div>";
 
   document.getElementById("oracleContent").innerHTML = html;
+
+  // Кнопка PDF
+  const pdfBtn = document.getElementById("pdfBtn");
+  if (pdfBtn) {
+    pdfBtn.addEventListener("click", async () => {
+      pdfBtn.textContent = "⏳ Создаём PDF...";
+      pdfBtn.disabled = true;
+
+      try {
+        const element = document.querySelector(".oracle-content");
+        const canvas = await html2canvas(element, {
+          backgroundColor: "#111118",
+          scale: 2,
+        });
+
+        const imgData = canvas.toDataURL("image/jpeg", 0.9);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const imgWidth = 190;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, "JPEG", 10, 15, imgWidth, imgHeight);
+        pdf.save("orakul-kina-" + (name || "goroskop") + ".pdf");
+
+        pdfBtn.textContent = "📄 Скачать PDF";
+        pdfBtn.disabled = false;
+      } catch (err) {
+        console.error("Ошибка PDF:", err);
+        pdfBtn.textContent = "📄 Скачать PDF";
+        pdfBtn.disabled = false;
+      }
+    });
+  }
+
+  // Кнопка Поделиться
+  const shareBtn = document.getElementById("shareBtn");
+  if (shareBtn) {
+    shareBtn.addEventListener("click", async () => {
+      const shareText =
+        "Мой знак в календаре Майя — " +
+        name +
+        ". Узнай свой на maya-calendar.ru";
+      const shareUrl =
+        window.location.origin +
+        "/?date=" +
+        encodeURIComponent(oracleData.date || "");
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Оракул Кина — твой знак Майя",
+            text: shareText,
+            url: shareUrl,
+          });
+        } catch (err) {}
+      } else {
+        const fullText = shareText + " " + shareUrl;
+        await navigator.clipboard.writeText(fullText);
+        alert("Ссылка скопирована! Отправь другу.");
+      }
+    });
+  }
 })();
