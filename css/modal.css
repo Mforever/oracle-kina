@@ -41,6 +41,7 @@
   opacity: 0;
   transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.5s ease, border-color 0.5s ease;
   box-shadow: 0 0 0px rgba(201, 160, 80, 0);
+  margin: 0 auto;
 }
 
 .modal-overlay.active .modal-card {
@@ -72,218 +73,50 @@
   z-index: 10;
 }
 
-.modal-overlay.active .modal-close {
-  opacity: 1;
-}
-
-.modal-close:hover {
-  color: var(--gold);
-  background: rgba(255, 255, 255, 0.05);
-}
+.modal-overlay.active .modal-close { opacity: 1; }
+.modal-close:hover { color: var(--gold); background: rgba(255, 255, 255, 0.05); }
 
 /* ===== GLYPH ===== */
-.modal-glyph {
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.modal-glyph img {
-  display: block;
-  margin: 0 auto;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 0 30px rgba(201, 160, 80, 0.3);
-}
+.modal-glyph { text-align: center; margin-bottom: 16px; }
+.modal-glyph img { display: block; margin: 0 auto; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 30px rgba(201, 160, 80, 0.3); }
 
 /* ===== NAME & SUBTITLE ===== */
-.modal-name {
-  font-family: var(--font-display);
-  text-align: center;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin-bottom: 6px;
-  word-wrap: break-word;
-}
-
-.modal-sub {
-  text-align: center;
-  font-size: 14px;
-  color: var(--gold);
-  margin-bottom: 24px;
-  letter-spacing: 1px;
-}
+.modal-name { font-family: var(--font-display); text-align: center; font-size: 28px; font-weight: 700; letter-spacing: 2px; margin-bottom: 6px; word-wrap: break-word; }
+.modal-sub { text-align: center; font-size: 14px; color: var(--gold); margin-bottom: 24px; letter-spacing: 1px; }
 
 /* ===== TEXT ===== */
-.modal-text {
-  font-size: 16px;
-  color: var(--text2);
-  line-height: 1.8;
-  margin-bottom: 28px;
-  min-height: 40px;
-  white-space: pre-line;
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
+.modal-text { font-size: 16px; color: var(--text2); line-height: 1.8; margin-bottom: 28px; min-height: 40px; white-space: pre-line; overflow-wrap: break-word; word-break: break-word; }
 
 /* ===== OFFER BLOCK ===== */
-.modal-offer {
-  text-align: center;
-  padding: 28px 24px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  display: none;
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
-}
-
-.modal-offer.visible {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.modal-offer-title {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-  line-height: 1.4;
-}
-
-.modal-price-new {
-  font-family: var(--font-display);
-  font-size: 42px;
-  font-weight: 900;
-  color: var(--gold);
-  margin-bottom: 20px;
-}
+.modal-offer { text-align: center; padding: 28px 24px; background: rgba(0, 0, 0, 0.3); border-radius: 20px; border: 1px solid var(--border); display: none; opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s; }
+.modal-offer.visible { display: block; opacity: 1; transform: translateY(0); }
+.modal-offer-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; letter-spacing: 1px; margin-bottom: 12px; line-height: 1.4; }
+.modal-price-new { font-family: var(--font-display); font-size: 42px; font-weight: 900; color: var(--gold); margin-bottom: 20px; }
 
 /* ===== FORM ===== */
-.modal-form {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 12px;
-}
-
-.modal-form input {
-  flex: 1;
-  min-width: 180px;
-  padding: 14px 18px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  color: var(--text);
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-.modal-form input:focus {
-  border-color: var(--gold);
-}
-
-.modal-form input::placeholder {
-  color: #555;
-}
-
-.modal-form .btn-primary {
-  white-space: nowrap;
-}
+.modal-form { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 12px; }
+.modal-form input { flex: 1; min-width: 180px; padding: 14px 18px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 15px; outline: none; transition: border-color 0.3s; }
+.modal-form input:focus { border-color: var(--gold); }
+.modal-form input::placeholder { color: #555; }
+.modal-form .btn-primary { white-space: nowrap; }
 
 /* ===== MESSAGES ===== */
-.modal-message {
-  font-size: 14px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  display: none;
-  margin-top: 8px;
-}
-
-.modal-message.success {
-  display: block;
-  background: rgba(74, 222, 128, 0.08);
-  color: #4ade80;
-}
-
-.modal-message.error {
-  display: block;
-  background: rgba(239, 68, 68, 0.08);
-  color: #f87171;
-}
-
-.modal-guarantee {
-  font-size: 12px;
-  color: #888;
-  margin-top: 14px;
-  letter-spacing: 0.5px;
-  line-height: 1.5;
-}
+.modal-message { font-size: 14px; padding: 10px 14px; border-radius: 12px; display: none; margin-top: 8px; }
+.modal-message.success { display: block; background: rgba(74, 222, 128, 0.08); color: #4ade80; }
+.modal-message.error { display: block; background: rgba(239, 68, 68, 0.08); color: #f87171; }
+.modal-guarantee { font-size: 12px; color: #888; margin-top: 14px; letter-spacing: 0.5px; line-height: 1.5; }
 
 /* ===== SCROLLBAR ===== */
-.modal-card::-webkit-scrollbar {
-  width: 4px;
-}
-
-.modal-card::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.modal-card::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 2px;
-}
-
-body.no-scroll {
-  overflow: hidden;
-  -webkit-overflow-scrolling: none;
-}
+.modal-card::-webkit-scrollbar { width: 4px; }
+.modal-card::-webkit-scrollbar-track { background: transparent; }
+.modal-card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+body.no-scroll { overflow: hidden; position: fixed; width: 100%; }
 
 /* ===== ADMIN LOGIN ===== */
-#adminLoginOverlay {
-  z-index: 2000;
-}
-
-#adminLoginOverlay .modal-card {
-  max-width: 400px;
-  text-align: center;
-}
-
-#adminLoginForm {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-#adminLoginForm input {
-  flex: 1;
-  min-width: 180px;
-  padding: 14px 18px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  color: var(--text);
-  font-size: 15px;
-  outline: none;
-}
-
-#adminLoginForm input:focus {
-  border-color: var(--gold);
-}
-
-#adminLoginForm input::placeholder {
-  color: #555;
-}
-
-#adminLoginMessage {
-  margin-top: 14px;
-  font-size: 13px;
-}
+#adminLoginOverlay { z-index: 2000; }
+#adminLoginOverlay .modal-card { max-width: 400px; text-align: center; }
+#adminLoginForm { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+#adminLoginForm input { flex: 1; min-width: 180px; padding: 14px 18px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 15px; outline: none; }
+#adminLoginForm input:focus { border-color: var(--gold); }
+#adminLoginForm input::placeholder { color: #555; }
+#adminLoginMessage { margin-top: 14px; font-size: 13px; }

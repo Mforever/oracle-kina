@@ -6,6 +6,9 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
 }
 
 .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
@@ -19,8 +22,8 @@ body {
   pointer-events: none; z-index: 0;
 }
 
-main { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 0 28px; }
-section { padding: 100px 0; }
+main { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 0 24px; width: 100%; }
+section { padding: 100px 0; width: 100%; }
 h2 { font-family: var(--font-display); font-size: 34px; font-weight: 700; text-align: center; margin-bottom: 40px; letter-spacing: 2px; color: var(--gold); }
 
 .artifact-img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease, filter 0.8s ease; }
