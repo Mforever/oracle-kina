@@ -213,37 +213,174 @@
 
   document.getElementById("oracleContent").innerHTML = html;
 
-  // Кнопка PDF
-  const pdfBtn = document.getElementById("pdfBtn");
+      // Кнопка PDF
+  const pdfBtn = document.getElementById('pdfBtn');
   if (pdfBtn) {
-    pdfBtn.addEventListener("click", async () => {
-      pdfBtn.textContent = "⏳ Создаём PDF...";
+    pdfBtn.addEventListener('click', () => {
+      pdfBtn.textContent = '⏳ Создаём PDF...';
       pdfBtn.disabled = true;
-
-      try {
-        const element = document.querySelector(".oracle-content");
-        const canvas = await html2canvas(element, {
-          backgroundColor: "#111118",
-          scale: 2,
-        });
-
-        const imgData = canvas.toDataURL("image/jpeg", 0.9);
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF("p", "mm", "a4");
-
-        const imgWidth = 190;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.addImage(imgData, "JPEG", 10, 15, imgWidth, imgHeight);
-        pdf.save("orakul-kina-" + (name || "goroskop") + ".pdf");
-
-        pdfBtn.textContent = "📄 Скачать PDF";
-        pdfBtn.disabled = false;
-      } catch (err) {
-        console.error("Ошибка PDF:", err);
-        pdfBtn.textContent = "📄 Скачать PDF";
-        pdfBtn.disabled = false;
-      }
+      
+      const sections = document.querySelectorAll('.oracle-section, .oracle-final');
+      let contentHTML = '';
+      sections.forEach(s => contentHTML += s.outerHTML);
+      
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.top = '-9999px';
+      iframe.style.left = '-9999px';
+      iframe.style.width = '800px';
+      iframe.style.height = 'auto';
+      document.body.appendChild(iframe);
+      
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      iframeDoc.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+              background: #111118; 
+              color: #e8e6e3; 
+              font-family: 'Inter', -apple-system, sans-serif; 
+              line-height: 1.7;
+              padding: 40px;
+            }
+            h3 { 
+              font-family: 'Cinzel', serif; 
+              font-size: 18px; 
+              color: #c9a050; 
+              margin-bottom: 12px; 
+              letter-spacing: 2px; 
+            }
+            p { 
+              font-size: 15px; 
+              color: #9a9790; 
+              margin-bottom: 8px; 
+            }
+            strong { color: #e8e6e3; font-weight: 600; }
+            .oracle-advice { 
+              font-style: italic; 
+              font-size: 18px; 
+              color: #e8e6e3; 
+              margin: 16px 0; 
+              padding-left: 20px; 
+              border-left: 2px solid #c9a050; 
+            }
+            .oracle-section { 
+              display: flex; 
+              gap: 18px; 
+              align-items: flex-start; 
+              margin-bottom: 24px; 
+              padding-bottom: 20px; 
+              border-bottom: 1px solid #222230; 
+            }
+            .oracle-section-icon { 
+              width: 56px; 
+              height: 56px; 
+              min-width: 56px;
+              max-width: 56px;
+              border-radius: 14px; 
+              overflow: hidden; 
+              flex-shrink: 0; 
+            }
+            .oracle-section-icon img { 
+              width: 56px !important; 
+              height: 56px !important; 
+              object-fit: cover; 
+              display: block; 
+            }
+            .oracle-final { 
+              margin-top: 32px; 
+              padding: 24px; 
+              background: rgba(201, 160, 80, 0.08); 
+              border: 1px solid rgba(201, 160, 80, 0.25); 
+              border-radius: 20px; 
+              text-align: center; 
+            }
+            .oracle-final p { 
+              font-family: 'Cinzel', serif; 
+              font-size: 16px; 
+              color: #c9a050; 
+              letter-spacing: 2px; 
+              margin-bottom: 8px; 
+            }
+          </style>
+        </head>
+        <body>
+          <h2 style="text-align:center; font-family:'Cinzel',serif; color:#c9a050; margin-bottom:28px; font-size:24px; letter-spacing:3px;">ПОЛНЫЙ ОРАКУЛ КИНА</h2>
+          ${contentHTML}
+        </body>
+        </html>
+      `);
+      iframeDoc.close();
+      
+      setTimeout(async () => {
+        try {
+          const body = iframeDoc.body;
+          const canvas = await html2canvas(body, {
+            backgroundColor: '#111118',
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            windowWidth: 800,
+            windowHeight: body.scrollHeight
+          });
+          
+          document.body.removeChild(iframe);
+          
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          
+          const imgWidth = 190;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          if (imgHeight > 277) {
+            let remainingHeight = canvas.height;
+            let yOffset = 0;
+            let firstPage = true;
+            
+            while (remainingHeight > 0) {
+              const sliceHeight = Math.min(remainingHeight, Math.floor((277 / imgHeight) * canvas.height));
+              const sliceCanvas = document.createElement('canvas');
+              sliceCanvas.width = canvas.width;
+              sliceCanvas.height = sliceHeight;
+              const sliceCtx = sliceCanvas.getContext('2d');
+              
+              sliceCtx.drawImage(canvas, 0, yOffset, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+              
+              const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
+              const sliceImgHeight = (sliceHeight * imgWidth) / canvas.width;
+              
+              if (firstPage) {
+                pdf.addImage(sliceData, 'JPEG', 10, 15, imgWidth, sliceImgHeight);
+                firstPage = false;
+              } else {
+                pdf.addPage();
+                pdf.addImage(sliceData, 'JPEG', 10, 15, imgWidth, sliceImgHeight);
+              }
+              
+              yOffset += sliceHeight;
+              remainingHeight -= sliceHeight;
+            }
+          } else {
+            pdf.addImage(imgData, 'JPEG', 10, 15, imgWidth, imgHeight);
+          }
+          
+          pdf.save('orakul-kina-' + (name || 'goroskop') + '.pdf');
+          
+          pdfBtn.textContent = '📄 Скачать PDF';
+          pdfBtn.disabled = false;
+        } catch (err) {
+          console.error('Ошибка PDF:', err);
+          if (iframe.parentNode) document.body.removeChild(iframe);
+          pdfBtn.textContent = '📄 Скачать PDF';
+          pdfBtn.disabled = false;
+        }
+      }, 1500);
     });
   }
 
