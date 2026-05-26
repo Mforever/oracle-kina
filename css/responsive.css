@@ -54,6 +54,20 @@
   .modal-text {
     font-size: 15px;
   }
+
+  .faq {
+    padding: 48px 0;
+  }
+
+  .faq-question {
+    font-size: 15px;
+    padding: 16px 18px;
+  }
+
+  .faq-answer {
+    font-size: 13px;
+    padding: 0 18px 16px;
+  }
 }
 
 /* ===== ТЕЛЕФОНЫ ===== */
@@ -70,6 +84,29 @@
 
   section {
     padding: 48px 0;
+  }
+
+  .faq {
+    padding: 40px 0;
+  }
+
+  .faq-list {
+    gap: 8px;
+  }
+
+  .faq-item {
+    border-radius: 12px;
+  }
+
+  .faq-question {
+    font-size: 14px;
+    padding: 14px 16px;
+    letter-spacing: 0;
+  }
+
+  .faq-answer {
+    font-size: 13px;
+    padding: 0 16px 14px;
   }
 
   /* Hero */
