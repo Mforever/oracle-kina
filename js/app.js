@@ -38,7 +38,7 @@
     }
   });
 
-    // Знак дня
+      // Знак дня
   (function loadDailySign() {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
@@ -49,12 +49,22 @@
     Oracle.api.fetchSign(todayStr).then(data => {
       const card = document.getElementById('dailyCard');
       if (!card || !data || !data.mayan) return;
+
+      // Перефразируем текст: убираем «Вы», делаем про день
+      let dailyText = data.mayan.short_text
+        .replace(/Вы — /g, 'Сегодня энергия дня — ')
+        .replace(/Вы /g, 'Этот день ')
+        .replace(/вас /g, 'окружающих ')
+        .replace(/вам /g, 'миру ')
+        .replace(/Ваш /g, 'Его ')
+        .replace(/ваша /g, 'его ')
+        .replace(/вас ждёт/g, 'этот день несёт');
       
       card.innerHTML = `
         <div class="daily-glyph">${data.mayan.glyph_emoji || '🔮'}</div>
         <div class="daily-name">${data.mayan.name_ru}</div>
         <div class="daily-sub">${data.mayan.name_original} · Кин ${data.mayan.id}</div>
-        <p class="daily-text">${data.mayan.short_text}</p>
+        <p class="daily-text">${dailyText}</p>
         <a href="#top" class="btn-primary daily-btn">Узнать свой знак</a>
       `;
     });
