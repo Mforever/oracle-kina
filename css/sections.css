@@ -291,3 +291,7 @@ details[open] .faq-question::after {
   color: var(--text2);
   padding: 20px;
 }
+.daily-btn {
+  display: inline-block;
+  margin-top: 20px;
+}
