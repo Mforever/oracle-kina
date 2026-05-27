@@ -5,27 +5,30 @@
 
   window.Oracle.state = { currentDate: "" };
 
-  function handleCalc() {
-    const d = birthDate.value.trim();
-    if (!d) return alert("Введи дату рождения в формате ДД.ММ.ГГГГ");
-    if (!Oracle.validate.date(d)) return alert("Некорректная дата.");
+    function handleCalc() {
+      const d = birthDate.value.trim();
+      if (!d) return alert("Введи дату рождения в формате ДД.ММ.ГГГГ");
+      if (!Oracle.validate.date(d)) return alert("Некорректная дата.");
 
-    Oracle.state.currentDate = d;
-    sessionStorage.removeItem("oracleData");
+      Oracle.state.currentDate = d;
 
-    const saved = sessionStorage.getItem("oracleData");
-    if (saved) {
-      try {
-        if (JSON.parse(saved).date === d) {
-          window.location.href = "pages/oracle.html";
-          return;
-        }
-      } catch (e) {}
+      // Проверяем localStorage (сохраняется дольше, чем sessionStorage)
+      const saved =
+        localStorage.getItem("oracleData") ||
+        sessionStorage.getItem("oracleData");
+      if (saved) {
+        try {
+          if (JSON.parse(saved).date === d) {
+            window.location.href = "pages/oracle.html";
+            return;
+          }
+        } catch (e) {}
+      }
+
+      sessionStorage.removeItem("oracleData");
+      Oracle.modal.open();
+      Oracle.api.fetchSign(d).then(Oracle.modal.showResult);
     }
-
-    Oracle.modal.open();
-    Oracle.api.fetchSign(d).then(Oracle.modal.showResult);
-  }
 
   calcBtn.addEventListener("click", (e) => {
     e.preventDefault();

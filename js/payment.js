@@ -30,9 +30,8 @@ Oracle.payment = (function () {
     Oracle.api
       .createPayment(email, Oracle.state.currentDate)
       .then((data) => {
-        console.log("Ответ от сервера:", data); // Отладка
         if (data.success && data.paymentUrl) {
-          // Сохраняем данные для страницы Оракула
+          // Сохраняем в sessionStorage (для текущей сессии)
           sessionStorage.setItem(
             "oracleData",
             JSON.stringify({
@@ -43,7 +42,17 @@ Oracle.payment = (function () {
               date: Oracle.state.currentDate,
             }),
           );
-          // Редиректим на ЮKassa
+          // Дублируем в localStorage (переживёт закрытие браузера)
+          localStorage.setItem(
+            "oracleData",
+            JSON.stringify({
+              fullText: data.fullText || "",
+              mayanName: data.mayanName || "",
+              glyph: data.glyph || "",
+              email: email,
+              date: Oracle.state.currentDate,
+            }),
+          );
           window.location.href = data.paymentUrl;
         } else {
           showError(data.error || "Ошибка создания платежа");
@@ -51,8 +60,7 @@ Oracle.payment = (function () {
           btn.disabled = false;
         }
       })
-      .catch((err) => {
-        console.error("Ошибка:", err);
+      .catch(() => {
         showError("Сервер недоступен");
         btn.textContent = "Получить на почту";
         btn.disabled = false;

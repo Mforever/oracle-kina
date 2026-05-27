@@ -1,16 +1,19 @@
 const { getDB } = require("../db");
 const { getMayanData, getZodiacData, getZodiacSign } = require("../mayan");
+const fs = require("fs");
+const path = require("path");
 
 async function signRoute(req, res, date) {
   if (!date) {
     res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
-    res.end(JSON.stringify({ error: "Укажи дату в формате YYYY-MM-DD" }));
+    res.end(JSON.stringify({ error: "Укажи дату в формате ДД.ММ.ГГГГ" }));
     return;
   }
 
   try {
     const zodiacSign = getZodiacSign(date);
-    const birthYear = new Date(date).getFullYear();
+    const parts = date.split(".");
+    const birthYear = parseInt(parts[2], 10);
     const animals = [
       "Крыса",
       "Бык",
@@ -54,8 +57,19 @@ async function signRoute(req, res, date) {
     if (!mayan) mayan = getMayanData(date);
     if (!combo) combo = getZodiacData(date);
 
+    // Проверяем, оплачена ли уже эта дата
+    const ordersPath = path.join(__dirname, "..", "..", "orders.json");
+    let alreadyPaid = false;
+    try {
+      if (fs.existsSync(ordersPath)) {
+        const orders = JSON.parse(fs.readFileSync(ordersPath, "utf-8"));
+        alreadyPaid = orders.some((order) => order.date === date);
+      }
+    } catch (e) {}
+
     const response = {
       date,
+      alreadyPaid,
       mayan: mayan
         ? {
             id: mayan.id,
