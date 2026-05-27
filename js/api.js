@@ -13,4 +13,11 @@ Oracle.api = {
       body: JSON.stringify({ email, date }),
     }).then((r) => r.json());
   },
+  resendEmail: function (email, date) {
+    return fetch("/api/resend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, date }),
+    }).then((r) => r.json());
+  },
 };
