@@ -1,10 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
 Disallow: /api/
 Disallow: /server/
 Disallow: /scripts/
-Disallow: /images/
-
-Sitemap: https://oracle-kina.ru/sitemap.xml
-
-Host: oracle-kina.ru
+Disallow: /js/
+Disallow: /css/
+Sitemap: https://maya-calendar.ru/sitemap.xml
