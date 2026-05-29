@@ -19,7 +19,7 @@ async function sendEmail(to, subject, html) {
 
   try {
     const info = await transport.sendMail({
-      from: '"Оракул Кина" <noreply@oracle-kina.ru>',
+      from: '"Оракул Кина" <oracle.kina@yandex.ru>',
       to,
       subject,
       html,

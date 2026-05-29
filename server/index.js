@@ -337,15 +337,23 @@ const server = http.createServer(async (req, res) => {
   const contentType = extMap[ext] || "text/plain; charset=utf-8";
 
   try {
-    res.writeHead(200, { "Content-Type": contentType });
-    res.end(fs.readFileSync(filePath));
+    const content = fs.readFileSync(filePath);
+    if (!res.headersSent) {
+      res.writeHead(200, { "Content-Type": contentType });
+      res.end(content);
+    }
   } catch {
     try {
-      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-      res.end(fs.readFileSync("index.html", "utf-8"));
+      const fallback = fs.readFileSync("index.html", "utf-8");
+      if (!res.headersSent) {
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(fallback);
+      }
     } catch {
-      res.writeHead(404);
-      res.end("<h1>404</h1>");
+      if (!res.headersSent) {
+        res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+        res.end("<h1>404</h1>");
+      }
     }
   }
 });
