@@ -11,13 +11,78 @@ Oracle.modal = (function () {
   const text = $("modalTypedText");
   const offer = $("modalOfferBlock");
 
+  function bindPaymentForm() {
+    const form = $("modalPayForm");
+    const emailInput = $("modalUserEmail");
+    const btn = $("modalPayBtn");
+    const msg = $("modalMessageBox");
+    
+    if (!form) return;
+    
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!email) {
+        msg.textContent = "Введи email";
+        msg.className = "modal-message error";
+        return;
+      }
+      if (!Oracle.validate || !Oracle.validate.email || !Oracle.validate.email(email)) {
+        msg.textContent = "Некорректный email";
+        msg.className = "modal-message error";
+        return;
+      }
+      if (!Oracle.state || !Oracle.state.currentDate) {
+        msg.textContent = "Сначала открой свой знак";
+        msg.className = "modal-message error";
+        return;
+      }
+
+      btn.textContent = "Создаём платёж...";
+      btn.disabled = true;
+      msg.className = "modal-message";
+
+      Oracle.api
+        .createPayment(email, Oracle.state.currentDate)
+        .then((data) => {
+          if (data.success && data.paymentUrl) {
+            sessionStorage.setItem("oracleData", JSON.stringify({
+              fullText: data.fullText || "",
+              mayanName: data.mayanName || "",
+              glyph: data.glyph || "",
+              email: email,
+              date: Oracle.state.currentDate,
+            }));
+            localStorage.setItem("oracleData", JSON.stringify({
+              fullText: data.fullText || "",
+              mayanName: data.mayanName || "",
+              glyph: data.glyph || "",
+              email: email,
+              date: Oracle.state.currentDate,
+            }));
+            window.location.href = data.paymentUrl;
+          } else {
+            msg.textContent = data.error || "Ошибка создания платежа";
+            msg.className = "modal-message error";
+            btn.textContent = "Получить на почту";
+            btn.disabled = false;
+          }
+        })
+        .catch(() => {
+          msg.textContent = "Сервер недоступен";
+          msg.className = "modal-message error";
+          btn.textContent = "Получить на почту";
+          btn.disabled = false;
+        });
+    });
+  }
+
   function open() {
     overlay.classList.add("active");
     document.body.classList.add("no-scroll");
-    // Восстанавливаем стандартный вид offer-блока
     offer.innerHTML = `
       <p class="modal-offer-title">Узнай свою судьбу на год<br>по цене чашки кофе</p>
-      <p class="modal-price-new">299 ₽</p>
+      <p class="modal-price-new">199 ₽</p>
       <form class="modal-form" id="modalPayForm">
         <input type="email" id="modalUserEmail" placeholder="Твой email" autocomplete="off">
         <button type="submit" class="btn-primary" id="modalPayBtn">Получить на почту</button>
@@ -29,6 +94,9 @@ Oracle.modal = (function () {
     subtitle.textContent = "";
     text.textContent = "";
     offer.classList.remove("visible");
+    
+    // Перепривязываем обработчик к новой форме
+    setTimeout(bindPaymentForm, 50);
   }
 
   function close() {
@@ -60,15 +128,12 @@ Oracle.modal = (function () {
       `;
       offer.classList.add("visible");
 
-      // Повторная отправка
       setTimeout(() => {
         const resendLink = document.getElementById("resendLink");
         if (resendLink) {
           resendLink.addEventListener("click", function (e) {
             e.preventDefault();
-            const saved = JSON.parse(
-              localStorage.getItem("oracleData") || "{}",
-            );
+            const saved = JSON.parse(localStorage.getItem("oracleData") || "{}");
             const email = saved.email || prompt("Введи email для отправки:");
             if (email && Oracle.state.currentDate) {
               Oracle.api

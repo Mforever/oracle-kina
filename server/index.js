@@ -8,6 +8,9 @@ const { paymentRoute } = require("./routes/payment");
 const { subscribeRoute } = require("./routes/subscribe");
 const { resendRoute } = require("./routes/resend");
 
+// Корень проекта (родительская директория server/)
+const PROJECT_ROOT = path.join(__dirname, "..");
+
 function parseCookies(req) {
   const cookieHeader = req.headers.cookie || "";
   const cookies = {};
@@ -133,17 +136,10 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ===== АДМИНКА: ЗНАКИ =====
-  if (
-    pathname === "/api/admin/signs" &&
-    req.method === "GET" &&
-    checkAdmin(req)
-  ) {
+  if (pathname === "/api/admin/signs" && req.method === "GET" && checkAdmin(req)) {
     try {
       const data = JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "scripts", "maya_260_v2.json"),
-          "utf-8",
-        ),
+        fs.readFileSync(path.join(PROJECT_ROOT, "scripts", "maya_260_v2.json"), "utf-8")
       );
       const list = data.map((item) => ({
         id: item.id,
@@ -163,13 +159,11 @@ const server = http.createServer(async (req, res) => {
 
   if (pathname.startsWith("/api/admin/sign/") && checkAdmin(req)) {
     const id = parseInt(pathname.split("/").pop());
-    const fp = path.join(__dirname, "..", "scripts", "maya_260_v2.json");
+    const fp = path.join(PROJECT_ROOT, "scripts", "maya_260_v2.json");
     if (req.method === "GET") {
       try {
         const data = JSON.parse(fs.readFileSync(fp, "utf-8"));
-        res.writeHead(200, {
-          "Content-Type": "application/json; charset=utf-8",
-        });
+        res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
         res.end(JSON.stringify(data.find((s) => s.id === id) || {}));
       } catch (e) {
         res.writeHead(500);
@@ -183,18 +177,24 @@ const server = http.createServer(async (req, res) => {
       req.on("end", () => {
         try {
           const update = JSON.parse(body);
+          if (typeof update.short_text === "string" && update.short_text.length > 2000) {
+            res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+            res.end(JSON.stringify({ success: false, error: "Текст слишком длинный" }));
+            return;
+          }
+          if (typeof update.full_text === "string" && update.full_text.length > 10000) {
+            res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+            res.end(JSON.stringify({ success: false, error: "Текст слишком длинный" }));
+            return;
+          }
           const data = JSON.parse(fs.readFileSync(fp, "utf-8"));
           const item = data.find((s) => s.id === id);
           if (item) {
-            if (update.short_text !== undefined)
-              item.short_text = update.short_text;
-            if (update.full_text !== undefined)
-              item.full_text = update.full_text;
+            if (update.short_text !== undefined) item.short_text = update.short_text;
+            if (update.full_text !== undefined) item.full_text = update.full_text;
             fs.writeFileSync(fp, JSON.stringify(data, null, 2), "utf-8");
           }
-          res.writeHead(200, {
-            "Content-Type": "application/json; charset=utf-8",
-          });
+          res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
           res.end(JSON.stringify({ success: true }));
         } catch (e) {
           res.writeHead(500);
@@ -207,29 +207,18 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ===== АДМИНКА: КОМБО =====
-  if (
-    pathname === "/api/admin/combos" &&
-    req.method === "GET" &&
-    checkAdmin(req)
-  ) {
+  if (pathname === "/api/admin/combos" && req.method === "GET" && checkAdmin(req)) {
     try {
       const data = JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "scripts", "zodiac_combos_260_v2.json"),
-          "utf-8",
-        ),
+        fs.readFileSync(path.join(PROJECT_ROOT, "scripts", "zodiac_combos_260_v2.json"), "utf-8")
       );
       res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-      res.end(
-        JSON.stringify(
-          data.map((item) => ({
-            id: item.id,
-            title: item.title,
-            short_text: item.short_text,
-            full_text: item.full_text,
-          })),
-        ),
-      );
+      res.end(JSON.stringify(data.map((item) => ({
+        id: item.id,
+        title: item.title,
+        short_text: item.short_text,
+        full_text: item.full_text,
+      }))));
     } catch (e) {
       res.writeHead(500);
       res.end("[]");
@@ -239,18 +228,11 @@ const server = http.createServer(async (req, res) => {
 
   if (pathname.startsWith("/api/admin/combo/") && checkAdmin(req)) {
     const id = parseInt(pathname.split("/").pop());
-    const fp = path.join(
-      __dirname,
-      "..",
-      "scripts",
-      "zodiac_combos_260_v2.json",
-    );
+    const fp = path.join(PROJECT_ROOT, "scripts", "zodiac_combos_260_v2.json");
     if (req.method === "GET") {
       try {
         const data = JSON.parse(fs.readFileSync(fp, "utf-8"));
-        res.writeHead(200, {
-          "Content-Type": "application/json; charset=utf-8",
-        });
+        res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
         res.end(JSON.stringify(data.find((s) => s.id === id) || {}));
       } catch (e) {
         res.writeHead(500);
@@ -264,18 +246,24 @@ const server = http.createServer(async (req, res) => {
       req.on("end", () => {
         try {
           const update = JSON.parse(body);
+          if (typeof update.short_text === "string" && update.short_text.length > 2000) {
+            res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+            res.end(JSON.stringify({ success: false, error: "Текст слишком длинный" }));
+            return;
+          }
+          if (typeof update.full_text === "string" && update.full_text.length > 10000) {
+            res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+            res.end(JSON.stringify({ success: false, error: "Текст слишком длинный" }));
+            return;
+          }
           const data = JSON.parse(fs.readFileSync(fp, "utf-8"));
           const item = data.find((s) => s.id === id);
           if (item) {
-            if (update.short_text !== undefined)
-              item.short_text = update.short_text;
-            if (update.full_text !== undefined)
-              item.full_text = update.full_text;
+            if (update.short_text !== undefined) item.short_text = update.short_text;
+            if (update.full_text !== undefined) item.full_text = update.full_text;
             fs.writeFileSync(fp, JSON.stringify(data, null, 2), "utf-8");
           }
-          res.writeHead(200, {
-            "Content-Type": "application/json; charset=utf-8",
-          });
+          res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
           res.end(JSON.stringify({ success: true }));
         } catch (e) {
           res.writeHead(500);
@@ -288,13 +276,9 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ===== АДМИНКА: ПОДПИСЧИКИ =====
-  if (
-    pathname === "/api/admin/subscribers" &&
-    req.method === "GET" &&
-    checkAdmin(req)
-  ) {
+  if (pathname === "/api/admin/subscribers" && req.method === "GET" && checkAdmin(req)) {
     try {
-      const p = path.join(__dirname, "..", "subscribers.json");
+      const p = path.join(PROJECT_ROOT, "subscribers.json");
       res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
       res.end(fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : "[]");
     } catch (e) {
@@ -305,13 +289,9 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ===== АДМИНКА: ЗАКАЗЫ =====
-  if (
-    pathname === "/api/admin/orders" &&
-    req.method === "GET" &&
-    checkAdmin(req)
-  ) {
+  if (pathname === "/api/admin/orders" && req.method === "GET" && checkAdmin(req)) {
     try {
-      const p = path.join(__dirname, "..", "orders.json");
+      const p = path.join(PROJECT_ROOT, "orders.json");
       res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
       res.end(fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : "[]");
     } catch (e) {
@@ -321,8 +301,27 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // ===== СТАТИКА =====
-  let filePath = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
+  if (pathname === "/api/admin/update-price" && req.method === "POST" && checkAdmin(req)) {
+    let body = "";
+    req.on("data", (c) => (body += c));
+    req.on("end", () => {
+      try {
+        const { price } = JSON.parse(body);
+        const modalPath = path.join(PROJECT_ROOT, "js", "modal.js");
+        let content = fs.readFileSync(modalPath, "utf-8");
+        content = content.replace(/\d+ ₽/, price + " ₽");
+        fs.writeFileSync(modalPath, content, "utf-8");
+        res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+        res.end(JSON.stringify({ success: true }));
+      } catch (e) {
+        res.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+        res.end(JSON.stringify({ success: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // ===== СТАТИКА (ИСПРАВЛЕНО: Path Traversal + доступ к корню проекта) =====
   const extMap = {
     ".html": "text/html; charset=utf-8",
     ".css": "text/css; charset=utf-8",
@@ -333,29 +332,41 @@ const server = http.createServer(async (req, res) => {
     ".svg": "image/svg+xml",
     ".ico": "image/x-icon",
   };
-  const ext = path.extname(filePath);
+
+  let rawPath = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
+  let safePath = path.normalize(rawPath).replace(/^(\.\.(\/|\\|$))+/, "");
+  let fullPath = path.join(PROJECT_ROOT, safePath);
+
+  // Защита: запрещаем выход за пределы PROJECT_ROOT
+  if (!fullPath.startsWith(PROJECT_ROOT)) {
+    res.writeHead(403);
+    res.end("Forbidden");
+    return;
+  }
+
+  const ext = path.extname(fullPath);
   const contentType = extMap[ext] || "text/plain; charset=utf-8";
 
-  try {
-    const content = fs.readFileSync(filePath);
-    if (!res.headersSent) {
-      res.writeHead(200, { "Content-Type": contentType });
-      res.end(content);
-    }
-  } catch {
-    try {
-      const fallback = fs.readFileSync("index.html", "utf-8");
+  fs.readFile(fullPath, (err, content) => {
+    if (!err) {
       if (!res.headersSent) {
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(fallback);
+        res.writeHead(200, { "Content-Type": contentType });
+        res.end(content);
       }
-    } catch {
-      if (!res.headersSent) {
-        res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
-        res.end("<h1>404</h1>");
-      }
+    } else {
+      // Fallback на index.html
+      const indexPath = path.join(PROJECT_ROOT, "index.html");
+      fs.readFile(indexPath, (err2, indexContent) => {
+        if (!err2 && !res.headersSent) {
+          res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+          res.end(indexContent);
+        } else if (!res.headersSent) {
+          res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+          res.end("<h1>404</h1>");
+        }
+      });
     }
-  }
+  });
 });
 
 server.listen(config.PORT, () => {

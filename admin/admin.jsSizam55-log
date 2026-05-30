@@ -72,9 +72,7 @@
         btns.forEach((b) => b.classList.remove("active"));
         tabs.forEach((t) => t.classList.remove("active"));
         btn.classList.add("active");
-        document
-          .getElementById("tab-" + btn.dataset.tab)
-          .classList.add("active");
+        document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
         if (btn.dataset.tab === "signs") loadSigns();
         if (btn.dataset.tab === "combos") loadCombos();
         if (btn.dataset.tab === "subscribers") loadSubscribers();
@@ -89,25 +87,15 @@
     const container = $("signsList");
     const search = $("signSearch");
     function render(list) {
-      container.innerHTML = list
-        .map(
-          (item) => `
+      container.innerHTML = list.map((item) => `
         <div class="sign-item">
           <div class="info"><div class="name">${item.id}. ${item.name_ru} ${item.glyph_emoji || ""}</div><div class="preview">${(item.short_text || "").substring(0, 120)}...</div></div>
           <button class="edit-btn" data-id="${item.id}" data-type="sign">Редактировать</button>
-        </div>`,
-        )
-        .join("");
+        </div>`).join("");
       bindEditButtons();
     }
     render(data);
-    search.addEventListener("input", () =>
-      render(
-        data.filter((item) =>
-          item.name_ru.toLowerCase().includes(search.value.toLowerCase()),
-        ),
-      ),
-    );
+    search.addEventListener("input", () => render(data.filter((item) => item.name_ru.toLowerCase().includes(search.value.toLowerCase()))));
   }
 
   async function loadCombos() {
@@ -116,56 +104,36 @@
     const container = $("combosList");
     const search = $("comboSearch");
     function render(list) {
-      container.innerHTML = list
-        .map(
-          (item) => `
+      container.innerHTML = list.map((item) => `
         <div class="combo-item">
           <div class="info"><div class="title">${item.id}. ${item.title}</div><div class="preview">${(item.short_text || "").substring(0, 120)}...</div></div>
           <button class="edit-btn" data-id="${item.id}" data-type="combo">Редактировать</button>
-        </div>`,
-        )
-        .join("");
+        </div>`).join("");
       bindEditButtons();
     }
     render(data);
-    search.addEventListener("input", () =>
-      render(
-        data.filter((item) =>
-          item.title.toLowerCase().includes(search.value.toLowerCase()),
-        ),
-      ),
-    );
+    search.addEventListener("input", () => render(data.filter((item) => item.title.toLowerCase().includes(search.value.toLowerCase()))));
   }
 
   async function loadSubscribers() {
     const res = await fetch("/api/admin/subscribers");
     const data = await res.json();
-    $("subsTable").innerHTML = data
-      .map(
-        (s) =>
-          `<tr><td>${s.email}</td><td>${s.date}</td><td><button class="delete-btn" data-email="${s.email}" data-type="subscriber">Удалить</button></td></tr>`,
-      )
-      .join("");
-    bindDeleteButtons();
+    $("subsTable").innerHTML = data.map((s) => `<tr><td>${s.email}</td><td>${s.date}</td></tr>`).join("");
   }
 
   async function loadOrders() {
     const res = await fetch("/api/admin/orders");
     const data = await res.json();
-    $("ordersTable").innerHTML = data
-      .map(
-        (o) =>
-          `<tr><td>${o.email}</td><td>${o.date}</td><td>${o.mayanName || "-"}</td><td>${o.createdAt || o.sentAt || "-"}</td><td><button class="delete-btn" data-id="${o.paymentId || o.email}" data-type="order">Удалить</button></td></tr>`,
-      )
-      .join("");
-    bindDeleteButtons();
+    $("ordersTable").innerHTML = data.map((o) => {
+      const orderDate = o.createdAt ? new Date(o.createdAt).toLocaleString("ru-RU") : "-";
+      return `<tr><td>${o.email}</td><td>${o.date}</td><td>${o.mayanName || "-"}</td><td>${orderDate}</td></tr>`;
+    }).join("");
   }
 
   function bindEditButtons() {
     document.querySelectorAll(".edit-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
-        const id = btn.dataset.id,
-          type = btn.dataset.type;
+        const id = btn.dataset.id, type = btn.dataset.type;
         const res = await fetch(`/api/admin/${type}/${id}`);
         const item = await res.json();
         openEditModal(item, type);
@@ -173,65 +141,22 @@
     });
   }
 
-  function bindDeleteButtons() {
-    document.querySelectorAll(".delete-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!confirm("Удалить запись?")) return;
-        const type = btn.dataset.type;
-        const id = btn.dataset.id || btn.dataset.email;
-
-        if (type === "subscriber") {
-          // Удаление подписчика
-          const res = await fetch("/api/admin/subscribers");
-          const data = await res.json();
-          const updated = data.filter((s) => s.email !== btn.dataset.email);
-          // Отправляем обновлённый список обратно (через кастомный endpoint или замену файла)
-          await fetch("/api/admin/subscribers/update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ subscribers: updated }),
-          });
-          loadSubscribers();
-        } else if (type === "order") {
-          // Удаление заказа
-          const res = await fetch("/api/admin/orders");
-          const data = await res.json();
-          const updated = data.filter(
-            (o) => o.paymentId !== btn.dataset.id && o.email !== btn.dataset.id,
-          );
-          await fetch("/api/admin/orders/update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ orders: updated }),
-          });
-          loadOrders();
-        }
-      });
-    });
-  }
-
   function openEditModal(item, type) {
     const modal = $("editModal");
-    $("editModalTitle").textContent =
-      type === "sign" ? item.name_ru : item.title;
+    $("editModalTitle").textContent = type === "sign" ? item.name_ru : item.title;
     $("editShortText").value = item.short_text || "";
     $("editFullText").value = item.full_text || "";
     $("editMessage").textContent = "";
     modal.classList.add("active");
 
     $("editModalClose").onclick = () => modal.classList.remove("active");
-    modal.onclick = (e) => {
-      if (e.target === modal) modal.classList.remove("active");
-    };
+    modal.onclick = (e) => { if (e.target === modal) modal.classList.remove("active"); };
 
     $("saveEditBtn").onclick = async () => {
       const res = await fetch(`/api/admin/${type}/${item.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          short_text: $("editShortText").value,
-          full_text: $("editFullText").value,
-        }),
+        body: JSON.stringify({ short_text: $("editShortText").value, full_text: $("editFullText").value }),
       });
       const data = await res.json();
       const msg = $("editMessage");
@@ -239,8 +164,7 @@
       msg.className = "edit-message " + (data.success ? "success" : "error");
       if (data.success) {
         setTimeout(() => modal.classList.remove("active"), 800);
-        if (type === "sign") loadSigns();
-        else loadCombos();
+        if (type === "sign") loadSigns(); else loadCombos();
       }
     };
   }
@@ -251,32 +175,17 @@
     $("settingInn").value = saved.inn || "";
     $("settingEmail").value = saved.email || "";
     $("settingTelegram").value = saved.telegram || "";
-    $("settingPrice").value = saved.price || "299";
+    $("settingPrice").value = saved.price || "399";
     $("settingsForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      const settings = {
+      localStorage.setItem("admin_settings", JSON.stringify({
         name: $("settingName").value,
         inn: $("settingInn").value,
         email: $("settingEmail").value,
         telegram: $("settingTelegram").value,
         price: $("settingPrice").value,
-      };
-      localStorage.setItem("admin_settings", JSON.stringify(settings));
-
-      // Обновляем цену в modal.js
-      fetch("/api/admin/update-price", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ price: settings.price }),
-      })
-        .then(() => {
-          alert("✅ Настройки сохранены. Цена обновлена на сайте.");
-        })
-        .catch(() => {
-          alert(
-            "✅ Настройки сохранены локально. Цена не обновлена на сервере.",
-          );
-        });
+      }));
+      alert("✅ Настройки сохранены (цена на сайте не изменится — попросите разработчика)");
     });
   }
 })();

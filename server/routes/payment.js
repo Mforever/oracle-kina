@@ -28,7 +28,7 @@ async function paymentRoute(req, res, body) {
     // Создаём платёж в ЮKassa
     const payment = await yooKassa.createPayment({
       amount: {
-        value: '299.00',
+        value: '399.00',
         currency: 'RUB'
       },
       capture: true,
